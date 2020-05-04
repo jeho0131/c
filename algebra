@@ -1,0 +1,65 @@
+//#include <stdio.h>
+//#include <windows.h>
+//
+//int main() {
+//	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), 2);
+//	printf("%s", "hello\n");
+//	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), 4);
+//	printf("%s", "hello\n");
+//	
+//	return 0;
+//	}
+
+//#include <stdio.h>
+//#include <time.h>
+//
+//int main() {
+//	time_t a;
+//	a = time(NULL);
+//	printf("1970년 1월 1일부터 지금까지 %d초 지났습니다.",a);
+//	
+//	return 0;
+//	} 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main() 
+{
+	printf("CLOCKS_PER_SEC is %d\n", CLOCKS_PER_SEC);
+	
+	srand(time(NULL));
+	clock_t a,b;
+	int answer;
+	int qa;
+	int qb;
+	int com[5];
+	
+	a = clock();
+	for(int i=0; i<5; i++) {
+		qa = rand() % 899 + 100;
+		qb = rand() % 899 + 100;
+		printf("%d. %d + %d=", i+1, qa, qb);
+		scanf("%d", &answer);
+		if(qa + qb == answer) {
+			com[i] = 1;
+		}
+		else {
+			com[i] = qa + qb;
+		}
+	}
+	b = clock();
+	
+	for(int j = 0; j < 5; j++) {
+		if(com[j] == 1) {
+			printf("%d. O\n", j + 1);
+		}
+		else 
+			printf("%d. X 답: %d\n", j + 1, com[j]);
+	}
+	
+	printf("문제를 푸는데 %f초 걸렸습니다.", (float) (b-a)/CLOCKS_PER_SEC);
+	
+	return 0;
+	} 
