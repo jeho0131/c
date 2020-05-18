@@ -1,0 +1,33 @@
+/*
+사용자가 입력을 잘못했을시 빨간색으로 바꾼다.
+
+*/
+
+
+
+
+
+#include <stdio.h>
+#include <conio.h>
+#include <windows.h>
+
+void cc(int colorNum) {
+	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), colorNum);
+}
+
+int main() {
+	char a;
+	char quiz[20] = "hello";
+	
+	printf("%s\n", quiz);
+	
+	for(int i = 0; ; i++) {
+		a = getch();
+		//글자를 틀렸을시 a의 색깔을 바꾼다. 
+		if(quiz[i] != a) {
+			cc(4);
+			printf("%c", a);
+		}
+	}
+	return 0;
+}
