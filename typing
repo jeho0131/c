@@ -1,0 +1,27 @@
+/*
+
+모니터 화면에 영어 문장을 띄우고 그걸 따라 친다.
+10문장을 타이핑한다.
+
+*/
+
+
+
+#include <stdio.h>
+#include <stdio.h>
+
+int main() {
+	FILE * fp;
+	fp = fopen("typing.txt", "w");
+	char typing[500];
+	char quiz[20] = {'m', 'y', ' ', 'a', 'l', 'l', ' ', 's', 'k','i', 'e', 's', '\0'};
+	char quiz2
+	//for(int i = 0; i < 5; i++) {
+		fprintf(stdout,"%s", quiz);
+		fscanf(stdin, "%s", typing);
+	//}
+	fprintf(fp, "%s", typing);
+	fclose(fp);
+	
+	return 0;
+}
