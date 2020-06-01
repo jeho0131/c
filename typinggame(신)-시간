@@ -1,0 +1,175 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include <time.h>
+
+//틀린 알파벳 통계 저장  
+int num[26]; 
+
+//틀린 알파벳 통계를 내기 위한 배열  
+char ap[54] = {  'a','b','c','d','e','f','g','h',
+				'i','j','k','l','m','n','o','p','q',
+				'r','s','t','u','v','w','x','y','z',
+				'A','B','C','D','E','F','G','H',
+				'I','J','K','L','M','N','O','P','Q',
+				'R','S','T','U','V','W','X','Y','Z'  };	
+								
+// 글자의 색깔을 바꿔준다. 
+void cc(int colorNum) {
+	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), colorNum);
+}
+
+//글자를 쓰는 곳을 바꿔준다. 
+void gotoxy(int x, int y) {
+	COORD Pos = {x, y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+			
+//틀린 알파벳 통계  
+void wc(char word) {
+	for(int i = 0; i < 26; i++) {
+		if(word == ap[i] || word == ap[i+26]) {
+			num[i] += 1;
+		}
+	}
+}
+
+int main() {
+	FILE * fp;
+	fp = fopen("typing.txt", "r");
+	char t;
+	char quiz[500];
+	char a;
+	int b = 0;
+	int x = 0;
+	int y = 0;
+	int qn = 0;
+	int e = 0;
+	int w = 0; 
+	int wn = 0;
+	int n = 0;
+	int count = 0;
+	int wnadd = 0;
+	int wnaddn = 0;
+	
+	
+	time_t cT;
+	struct tm * lT;
+	cT = time(NULL);
+	lT = localtime(&cT);
+	
+	int nt = lT -> tm_sec;
+	
+	//창의 사이즈와 창의 이름을 정한다. 
+	system("mode con: cols=100 lines=70");
+	system("title=typing Game");	
+
+	while(1) {
+		//문제를 낸다. 
+		cc(15);
+		for(int j = 0; ; j++) {
+			fseek(fp,0,SEEK_CUR);
+			t = fgetc(fp);
+			putchar(t);
+			quiz[j] = t;
+			
+			//문장의 끝  			
+			if(t == '.' || t == '?' || t == '!') {
+				fseek(fp,0,SEEK_CUR);
+				t = fgetc(fp);
+				//putchar(t);
+				printf("\n");
+				qn = j;
+				y += 1;
+				cc(7);
+				break;
+			}
+		}
+		
+		//문제에 따라서 답을 쓴다. 
+		for(int k = 0; ; k++) {
+			a = getch();
+			x += 1;
+			b = a;
+			
+//			if(lT->tm_sec < nt) {
+//				count = 60 - nt + lT -> tm_sec;
+//			}
+//			else {
+//				count = 60 - nt;
+//			}
+			cT = time(NULL);
+			lT = localtime(&cT);
+			printf("%d", lT->tm_sec);
+			if(t == lT->tm_sec) {
+				printf("1");
+				count = 0;
+			    
+				//t = lT -> tm_sec;
+				wnadd += wn;
+				wnaddn += 1;
+			}
+			
+			//엔터키를 눌렀을때 다음 문제로 넘어간다. 
+			if(b == 13) {
+				printf("\n\n");
+				y += 2;
+				break;
+			}
+			
+			//문제보다 글을 더 많이 썼을 때 다음 문제로 넘어간다. 
+			else if(qn < k) {
+				x -= 1;
+				printf("\n\n");
+				y += 2;
+				break;
+			}
+			
+			//글씨를 지우고 다시쓴다. 
+			else if(b == 8 && k != 0) {
+				k = k - 2;
+				x = x - 2;
+				gotoxy(x, y);
+				printf(" ");
+				e += 1;
+				w -= 1;
+				wn -= 1;
+			}
+			
+			//글을 쓴것과 문제가 다를시 내가 쓴글이 빨간색으로 바뀐다. 
+			if(quiz[k] != a) {
+				cc(12);
+				printf("%c\a", a);
+				cc(7);
+				wc(a);
+				w += 1;
+				wn += 1;
+			}
+			
+			//내가 입력한 글씨가 써진다. 
+			else {
+				printf("%c", a);
+				wn += 1;
+			}
+		}
+		x = 0;
+		//파일의 더이상 문장이 없을시 무한 반복을 나간다.
+		if(t == EOF) break;
+	}
+	printf("\n틀린 횟수 : %d, 지운 횟수 : %d\n", w, e);
+	printf("\n");  
+	printf("[종류]\t[횟수]\t[종류]\t[횟수]\n"); 
+	for(int i = 0; i < 26; i++) {
+		if(n == 2) {
+			printf("\n");
+			n = 0;
+		}
+		printf(" %c\t %d\t", ap[i], num[i]);
+		n += 1;
+	}
+	double wnend = wnadd / wnaddn;
+	printf("\n 타자:%f/분", wnend); 
+	fclose(fp);
+	
+	return 0;
+}
