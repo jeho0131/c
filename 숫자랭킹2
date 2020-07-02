@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+#include <stdlib.h>
+
+int main() {
+	int rank[100];
+	int m = 0;
+	int big = 0;
+	int * num;
+
+	printf("숫자를 얼마나 입력할 건가요?(100이내) ");
+	scanf("%d", &m);
+	num = (int *) calloc (m, sizeof(int));
+	
+	printf("\n숫자를 입력하시오. "); 
+	for(int c = 0; c < m; c++) {
+		scanf("%d", &num[c]);
+	}
+		
+	for(int i = 0; i < m; i++) {
+		for(int j = 0; j < m; j++) {
+			if(num[i] < num[j]) {
+				big += 1;
+			}	
+		}
+		rank[i] = big + 1;
+		big = 0;
+	}
+	
+	printf("\n");
+	for(int l = 0; l < m; l++) {
+		printf("\n%d (%d)\n", num[l], rank[l]);
+	}
+	
+	free(num);
+	return 0;
+}
