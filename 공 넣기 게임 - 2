@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+
+void cxy(int x, int y) {
+	COORD Pos = {x, y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+int pMovex(int px, int py) {
+	char a;
+	
+	a = getch();
+	cxy(px, py);
+	switch(a) {
+		case 75: cxy(px * 2, py); printf("  "); cxy((px * 2) - 2, py); printf("★"); px -= 1; break;
+		case 77: cxy(px * 2, py); printf("  "); cxy((px * 2) + 2, py); printf("★"); px += 1; break;
+	}
+	
+	return px;
+}
+
+int pMovey(int px, int py) {
+	char a;
+	
+	a = getch();
+	cxy(px, py);
+	switch(a) {
+		case 72: cxy(px * 2, py); printf("  "); cxy(px * 2, py - 1); printf("★"); py -= 1; break;
+		case 80: cxy(px * 2, py); printf("  "); cxy(px * 2, py + 1); printf("★"); py += 1; break; 
+	}
+	
+	return py;
+}
+		
+typedef struct {
+	int x;
+	int y;
+}point;
+
+typedef struct {
+	point bP;
+}ball;
+
+typedef struct {
+	point pP;
+}player;
+
+typedef struct {
+	point wP;
+}wall;
+
+typedef struct { 
+	point hP;
+}home;
+
+int main() {
+	wall w1[28] = {{4,2}, {5,2}, {6,2}, {4,3}, {6,3}, {4,4}, {6,4}, 
+				  {7,4}, {8,4}, {9,4}, {2,5}, {3,5}, {4,5}, {9,5},
+				  {2,6}, {7,6}, {8,6}, {9,6}, {2,7}, {3,7}, {4,7},
+				  {5,7}, {7,7}, {5,8}, {7,8}, {5,9}, {6,9}, {7,9}};
+	ball b1[4] = {{5,5}, {7,5}, {5,6}, {6,7}};
+	home h1[4] = {{5,3}, {8,5}, {3,6}, {6,8}};
+	player p1 = {6,6};
+	
+	for(int j = 0; j < 4; j++) {
+		cxy(b1[j].bP.x * 2, b1[j].bP.y);
+		printf("●");
+		cxy(h1[j].hP.x * 2, h1[j].hP.y);
+		printf("◇");
+	}
+	
+	cxy(p1.pP.x * 2, p1.pP.y);
+	printf("★");
+	
+	for(int i = 0; i < 28; i++) {
+		cxy(w1[i].wP.x * 2, w1[i].wP.y);
+		printf("■");
+	}
+	printf("\n\n"); 
+
+	char a;
+	int b;
+	int px = p1.pP.x;
+	int py = p1.pP.y;
+	
+	while(1) {
+		a = getch();
+		b = a;
+		
+		//printf("%d\n", b);
+		if(b == -32) {
+			px = pMovex(px, py);
+			py = pMovey(px, py);
+		}
+	}
+	
+	return 0;
+}
