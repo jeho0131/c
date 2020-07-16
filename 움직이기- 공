@@ -1,0 +1,211 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+
+int xn = 0;
+int yn = 0;
+int pw[4];
+int bw[4][4];
+int bxy[4][2];
+
+void cxy(int x, int y) {
+	COORD Pos = {x, y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+void cnxy(int px, int py) {
+	xn = px;
+	yn = py;
+}
+
+void pxy(int px, int py) {
+	cxy(30,15);
+	printf("%d %d", px, py);
+}
+
+void move(int px, int py) {
+	char a;
+	a = getch();
+	switch(a) {
+		case 75:
+			for(int i = 0; i < 4; i++) {
+				if(bw[i][0] == 1) {
+					cxy(px * 2, py); printf("  "); cxy((px - 1) * 2, py); printf("★"); px -= 1; cnxy(px, py);
+					cxy(bxy[0][0] * 2, bxy[0][1]); printf("  "); cxy((bxy[0][0] - 1) * 2, bxy[0][1]); printf("●"); bxy[0][0] -= 1; break; 	 	
+				}
+			}
+			if(pw[0] == 0) {
+				cxy(px * 2, py); printf("  "); cxy((px - 1) * 2, py); printf("★"); px -= 1; cnxy(px, py); break;
+			}
+			else {
+				cnxy(px, py); break;
+			}
+		
+		case 77:
+			for(int j = 0; j < 4; j++) {
+				if(bw[j][1] == 1) {
+					cxy(px * 2, py); printf("  "); cxy((px + 1) * 2, py); printf("★"); px += 1; cnxy(px, py);
+					cxy(bxy[1][0] * 2, bxy[1][1]); printf("  "); cxy((bxy[1][0] + 1) * 2, bxy[1][1]); printf("●"); bxy[1][0] += 1; break;
+				}
+			}
+			if(pw[1] == 0) {
+				cxy(px * 2, py); printf("  "); cxy((px + 1) * 2, py); printf("★"); px += 1; cnxy(px, py); break;
+			}
+			else {
+				cnxy(px, py); break;
+			}
+			
+		case 72:
+			for(int k = 0; k < 4; k++) {
+				if(bw[k][2] == 1) {
+					cxy(px * 2, py); printf("  "); cxy(px * 2, py - 1); printf("★"); py -= 1; cnxy(px, py);
+					cxy(bxy[2][0] * 2, bxy[2][1]); printf("  "); cxy(bxy[2][0] * 2, bxy[2][1] - 1); printf("●"); bxy[2][1] -= 1; break;
+				}
+			} 
+			if(pw[2] == 0) {
+				cxy(px * 2, py); printf("  "); cxy(px * 2, py - 1); printf("★"); py -= 1; cnxy(px, py); break;
+			}
+			else {
+				cnxy(px, py); break;
+			}
+		
+		case 80: 
+			for(int k = 0; k < 4; k++) {
+				if(bw[k][3] == 1) {
+					cxy(px * 2, py); printf("  "); cxy(px * 2, py + 1); printf("★"); py += 1; cnxy(px, py);
+					cxy(bxy[3][0] * 2, bxy[3][1]); printf("  "); cxy(bxy[3][0] * 2, bxy[3][1] + 1); printf("●"); bxy[3][1] += 1; break;
+				}
+			} 
+			if(pw[3] == 0) {
+				cxy(px * 2, py); printf("  "); cxy(px * 2, py + 1); printf("★"); py += 1; cnxy(px, py); break;
+			}
+			else {
+				cnxy(px, py); break;
+			}
+	}
+}
+		
+typedef struct {
+	int x;
+	int y;
+}point;
+
+typedef struct {
+	point bP;
+}ball;
+
+typedef struct {
+	point pP;
+}player;
+
+typedef struct {
+	point wP;
+}wall;
+
+typedef struct { 
+	point hP;
+}home;
+
+wall w1[28] = {{4,2}, {5,2}, {6,2}, {4,3}, {6,3}, {4,4}, {6,4}, 
+				  {7,4}, {8,4}, {9,4}, {2,5}, {3,5}, {4,5}, {9,5},
+				  {2,6}, {7,6}, {8,6}, {9,6}, {2,7}, {3,7}, {4,7},
+				  {5,7}, {7,7}, {5,8}, {7,8}, {5,9}, {6,9}, {7,9}};
+ball b1[4] = {{5,5}, {7,5}, {5,6}, {6,7}};
+home h1[4] = {{5,3}, {8,5}, {3,6}, {6,8}};
+player p1 = {6,6};
+
+
+int bcw(int px, int py) {
+	for(int i = 0; i < 28; i++) {
+		if(w1[i].wP.x == px && w1[i].wP.y == py) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int bcb(int px, int py) {
+	for(int i = 0; i < 4; i++) {
+		if(bxy[i][0] == px && bxy[i][1] == py) {
+			return 0;
+		}
+	}
+	return 1;
+}
+
+int main() {
+	for(int j = 0; j < 4; j++) {
+		cxy(b1[j].bP.x * 2, b1[j].bP.y);
+		printf("●");
+		cxy(h1[j].hP.x * 2, h1[j].hP.y);
+		printf("◇");
+	}
+	
+	cxy(p1.pP.x * 2, p1.pP.y);
+	printf("★");
+	
+	for(int i = 0; i < 28; i++) {
+		cxy(w1[i].wP.x * 2, w1[i].wP.y);
+		printf("■");
+	}
+	printf("\n\n"); 
+
+	char a;
+	int b;
+	int px = p1.pP.x;
+	int py = p1.pP.y;
+	int wx = 0;
+	int wy = 0;
+	
+
+	for(int bn = 0; bn < 4; bn++) {
+		bxy[bn][0] = b1[bn].bP.x;
+		bxy[bn][1] = b1[bn].bP.y;
+	}
+
+	while(1) {
+		a = getch();
+		b = a;
+		
+		for(int r = 0; r < 4; r++) {
+			pw[r] = 0;
+			bw[r] = 0;
+		}
+		
+		for(int wp = 0; wp < 28; wp++) {
+			wx = w1[wp].wP.x;
+			wy = w1[wp].wP.y;
+			if(wx == px - 1 && wy == py) pw[0] = 1;
+			if(wx == px + 1 && wy == py) pw[1] = 1;
+			if(wx == px && wy == py - 1) pw[2] = 1;
+			if(wx == px && wy == py + 1) pw[3] = 1;
+		}
+		
+		for(int bl = 0; bl < 4; bl++) {
+			if(bxy[bl][0] == px - 1 && bxy[bl][1] == py) {
+				bw[i][0] += bcw(px - 1, py);
+				bw[i][0] += bcb(px - 1, py);
+			}
+			if(bxy[bl][0] == px + 1 && bxy[bl][1] == py) {
+				bw[i][1] += bcw(px + 1, py);
+				bw[i][1] += bcb(px + 1, py);
+			}
+			if(bxy[bl][0] == px && bxy[bl][1] == py - 1) {
+				bw[i][2] += bcw(px, py - 1);
+				bw[i][2] += bcb(px, py - 1);
+			}
+			if(bxy[bl][0] == px && bxy[bl][1] == py + 1) {
+				bw[i][3] += bcw(px, py + 1);
+				bw[i][3] += bcb(px, py + 1);
+			}
+		}
+		
+		if(b == -32) {
+			move(px, py);
+			px = xn;
+			py = yn;
+		}
+	}
+	
+	return 0;
+}
