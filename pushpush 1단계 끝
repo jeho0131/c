@@ -1,0 +1,194 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+
+
+		
+typedef struct {int x;	int y;} point;
+
+
+
+point w1[28] = {{4,2}, {5,2}, {6,2}, {4,3}, {6,3}, {4,4}, {6,4}, 
+				{7,4}, {8,4}, {9,4}, {2,5}, {3,5}, {4,5}, {9,5},
+				{2,6}, {7,6}, {8,6}, {9,6}, {2,7}, {3,7}, {4,7},
+				{5,7}, {7,7}, {5,8}, {7,8}, {5,9}, {6,9}, {7,9}};
+point b1[4] = {{5,5}, {7,5}, {5,6}, {6,7}};
+point h1[4] = {{5,3}, {8,5}, {3,6}, {6,8}};
+point bb[100];
+point hb[100];
+point pbu;
+int bn = 0;
+int hm[4];
+int hn = 0;
+int hmax = 0;
+
+
+
+void cxy(int x, int y) {
+	COORD Pos = {x, y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+
+
+int isEmpty(int x, int y) {
+	for(int i = 0; i < 28; i++) {
+		if(w1[i].x == x && w1[i].y == y) {
+			return 0;
+		}
+	}
+	for(int j = 0; j < 4; j++) {
+		if(b1[j].x == x && b1[j].y == y) {
+			bn = j;
+			return 2;
+		}
+	}
+	for(int k = 0; k < 4; k++) {
+		if(h1[k].x == x && h1[k].y == y) {
+			hn = k;
+			return 3;
+		}
+	}
+	return 1;
+}
+
+
+
+void ce(int x, int y) { 
+	cxy(x * 2, y); 
+	printf("  ");  
+}
+
+
+
+void draw(int x, int y, int c) {
+	cxy(x * 2, y);
+	
+	if(c == 0) {
+		printf("★");
+	}
+	else if(c == 1) {
+		for(int i = 0; i < 28; i++) {
+			cxy(w1[i].x * 2, w1[i].y);
+			printf("■");
+		}
+	}
+	else if(c == 2) {
+		printf("●");
+	}
+	else if(c == 3) {
+		for(int j = 0; j < 4; j++) {
+			cxy(h1[j].x * 2, h1[j].y);
+			if(hm[j] == 1) printf("◆"); 
+			else printf("◇");
+		}
+	}
+}
+
+void backup() {
+	cxy(0,0);
+	for(int r = 0; r < 16; r++) {
+		for(int r2 = 0; r2 < 16; r2++) {
+			ce(r, r2);
+		}
+	}
+	for(int i = 0; i < 4; i++) {
+		b1[i] = bb[i];
+	}
+	for(int j = 0; j < 4; j++) {
+		hm[j] = 0;
+	}
+	for(int b = 0; b < 4; b++) {
+		draw(b1[b].x, b1[b].y, 2);
+	}
+	draw(w1[0].x, w1[0].y, 1);
+	draw(h1[0].x, h1[0].y, 3);
+	hmax = 0;
+}
+
+
+
+int main()
+{
+	point p = {6,6};
+	int pc[2];
+	int bc[2];
+	int a;
+	int pe = 0;	
+	int pb = 0;
+	int add[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+	int i = 0;
+	
+	draw(p.x, p.y, 0);
+	draw(w1[i].x, w1[i].y, 1);
+	draw(h1[i].x, h1[i].y, 3);
+
+	for(int i = 0; i < sizeof(b1); i++) {
+		bb[i] = b1[i];
+	}
+	pbu = p;
+
+	for(int b = 0; b < 4; b++) {
+		draw(b1[b].x, b1[b].y, 2);
+	}
+	printf("\n\n"); 
+	
+	while(hmax != 4) {
+		a = getch();
+		
+		if (a == 224) {
+			a = getch();
+				
+			switch(a){
+				case 75: i = 0; break; // 0 is LEFT 
+				case 77: i = 1; break;
+				case 72: i = 2; break;
+				case 80: i = 3; break;
+			}
+		}
+		
+		pe = isEmpty(p.x + add[i][0], p.y + add[i][1]);
+		draw(h1[i].x, h1[i].y, 3);
+		
+		if(a == 99) {
+			backup();
+			p = pbu;
+			draw(p.x, p.y, 0);
+		}
+		else if (pe == 1) {
+			pc[0] = p.x;
+			pc[1] = p.y;
+			p.x += add[i][0];
+			p.y += add[i][1];
+			ce(pc[0], pc[1]);
+			draw(p.x, p.y, 0); 
+		}
+		else if(pe == 2) {
+			pe = isEmpty(b1[bn].x + add[i][0], b1[bn].y + add[i][1]);
+			if(pe == 1) {
+				ce(b1[bn].x, b1[bn].y);
+				b1[bn].x += add[i][0];
+				b1[bn].y += add[i][1];
+				draw(b1[bn].x, b1[bn].y, 2);
+				
+				ce(p.x, p.y); // 이전 플레이어 지우기  
+				p.x += add[i][0];
+				p.y += add[i][1];
+				draw(p.x, p.y, 0); // 새로 플레이어의 위치 그리기 
+			}
+			else if(pe == 3) {
+				ce(p.x, p.y); // 이전 플레이어 지우기  
+				p.x += add[i][0];
+				p.y += add[i][1];
+				draw(p.x, p.y, 0); // 새로 플레이어의 위치 그리기 
+				hm[hn] = 1;
+				draw(h1[i].x, h1[i].y, 3);
+				hmax += 1;
+			}
+		}
+	}
+	cxy(0, 15); 
+	printf("축하합니다. 모든 공을 집에 넣으셨습니다."); 
+	
+	return 0;
+}
