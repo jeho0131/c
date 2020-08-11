@@ -1,0 +1,440 @@
+#include <stdio.h>
+#include <windows.h>
+#include <conio.h>
+
+
+		
+typedef struct {int x;	int y;} point;
+
+int wInLev[5] ={ 28, 39, 35, 26, 37 };
+int bInLev[5] = { 4, 3, 4, 5, 5 };
+int hInLev[5] = { 4, 3, 4, 5, 5 };
+
+point w[100];
+point b[100];
+point h[100];
+point P;
+
+point w1[5][100] = {
+	
+				        { {4,2}, {5,2}, {6,2}, {4,3}, {6,3}, {4,4}, {6,4}, 
+						  {7,4}, {8,4}, {9,4}, {2,5}, {3,5}, {4,5}, {9,5},
+						  {2,6}, {7,6}, {8,6}, {9,6}, {2,7}, {3,7}, {4,7},
+						  {5,7}, {7,7}, {5,8}, {7,8}, {5,9}, {6,9}, {7,9} },
+						  
+						{ {2,2}, {3,2}, {4,2}, {5,2}, {6,2}, {2,3}, {6,3}, {2,4}, 
+						  {6,4}, {8,4}, {9,4}, {10,4}, {2,5}, {6,5}, {8,5}, {10,5}, 
+						  {2,6}, {3,6}, {4,6}, {6,6}, {7,6}, {8,6}, {10,6}, {3,7}, 
+						  {4,7}, {10,7}, {3,8}, {7,8}, {10,8}, {3,9}, {7,9}, {8,9},
+						  {9,9}, {10,9}, {3,10}, {4,10}, {5,10}, {6,10}, {7,10}    },
+						  
+						{ {2,3}, {3,3}, {4,3}, {5,3}, {6,3}, {7,3}, {8,3}, 
+						  {2,4}, {8,4}, {9,4}, {10,4}, {1,5}, {2,5}, {4,5}, 
+						  {5,5}, {6,5}, {10,5}, {1,6}, {10,6}, {1,7}, {5,7},
+						  {9,7}, {10,7}, {1,8}, {2,8}, {5,8}, {9,8}, {2,9}, 
+						  {3,9}, {4,9}, {5,9}, {6,9}, {7,9}, {8,9}, {9,9}   },
+						  
+						{ {3,2}, {4,2}, {5,2}, {6,2}, {2,3}, {3,3}, {6,3}, 
+						  {2,4}, {6,4}, {2,5}, {3,5}, {6,5}, {7,5}, {2,6},
+						  {3,6}, {7,6}, {2,7}, {7,7}, {2,8}, {7,8}, 
+						  {2,9}, {3,9}, {4,9}, {5,9}, {6,9}, {7,9}			},
+						  
+						{ {5,2}, {6,2}, {7,2}, {8,2}, {9,2}, {10,2}, 
+						  {11,2}, {4,3}, {5,3}, {8,3}, {11,3}, {4,4}, 
+						  {8,4}, {11,4}, {4,5}, {11,5}, {4,6}, {7,6}, 
+						  {8,6}, {11,6}, {2,7}, {3,7}, {4,7}, {8,7}, 
+						  {10,7}, {11,7}, {2,8},{10,8}, {2,9}, {3,9}, 
+						  {4,9}, {5,9}, {6,9}, {7,9}, {8,9}, {9,9}, {10,9}	}
+					  
+																	             		};
+					  
+point b1[5][100] = {
+	
+					  {{5,5}, {7,5}, {5,6}, {6,7}},
+					  {{4,4}, {5,4}, {4,5}},
+					  {{3,5}, {5,6}, {8,6}, {7,7}},
+					  {{4,4}, {4,5}, {5,6}, {4,7}, {5,8}},
+					  {{5,5}, {7,5}, {9,5}, {6,6}, {6,7}}
+				  
+											  				};
+											  
+point h1[5][100] = {
+	
+					  {{5,3}, {8,5}, {3,6}, {6,8}},
+				      {{9,5}, {9,6}, {9,7}},	
+				      {{3,7}, {4,7}, {3,8}, {4,8}},
+				      {{3,7}, {3,8}, {4,8}, {5,8}, {6,8}},
+				      {{3,8}, {4,8}, {5,8}, {6,8}, {7,8}}
+				      
+															};
+														
+int hmn[5][100] =  {
+						{ 0, 0, 0, 0 },
+						{ 0, 0, 0 },
+						{ 0, 0, 0, 0 },
+						{ 0, 0, 0, 1, 0 },
+						{ 0, 0, 0, 0, 0 }
+											};
+															
+point p[5] = {{6,6}, {3,3}, {3,6}, {3,4}, {10,3}};
+point bb[100];
+point hb[100];
+point pbu;
+int bn = 0;
+int hm[100];
+int hn = 0;
+int hn2 = 0;
+int hmax = 0;
+int stage = 0;
+int ws = 0;
+int bs = 0;
+int hs = 0;
+int clear[5];
+int clearcheck = 0;
+
+
+
+
+void cxy(int x, int y) {
+	COORD Pos = {x, y};
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
+}
+
+
+
+int isEmpty(int x, int y) {
+	for(int i = 0; i < ws; i++) {
+		if(w[i].x == x && w[i].y == y) {
+			return 0;
+		}
+	}
+	for(int k = 0; k < hs; k++) {
+		if(h[k].x == x && h[k].y == y) {
+			hn = k;
+			return 3;
+		}
+	}
+	for(int j = 0; j < bs; j++) {
+		if(b[j].x == x && b[j].y == y) {
+			bn = j;
+			return 2;
+		}
+	}
+	
+	return 1;
+}
+
+int numIsBall(int x, int y) {
+	for(int i = 0; i < bs; i++) {
+		if(b[i].x == x && b[i].y == y) {
+			bn = i;
+			break;
+		}
+	}
+}
+
+
+
+void ce(int x, int y) { 
+	cxy(x * 2, y); 
+	printf("  ");  
+}
+
+void e() {
+	for(int r = 0; r < 16; r++) {
+		for(int r2 = 0; r2 < 16; r2++) {
+			ce(r, r2);
+		}
+	}
+	for(int j = 0; j < hs; j++) {
+		hm[j] = hmn[stage][j];
+		if(hmn[stage][j] == 1) {
+			hmax += 1;
+		}
+	}
+}
+
+void draw(int x, int y, int c) {
+	cxy(x * 2, y);
+	
+	if(c == 0) {
+		printf("★");
+	}
+	else if(c == 1) {
+		for(int i = 0; i < ws; i++) {
+			cxy(w[i].x * 2, w[i].y);
+			printf("■");
+		}
+	}
+	else if(c == 2) {
+		printf("●");
+	}
+	else if(c == 3) {
+		for(int j = 0; j < hs; j++) {
+			cxy(h[j].x * 2, h[j].y);
+			if(hm[j] == 1) printf("◆"); 
+			else printf("◇");
+		}
+	}
+}
+
+void backup() {
+	cxy(0,0);
+	for(int r = 0; r < 16; r++) {
+		for(int r2 = 0; r2 < 16; r2++) {
+			ce(r, r2);
+		}
+	}
+	for(int i = 0; i < bs; i++) {
+		b[i] = bb[i];
+	}
+	for(int j = 0; j < hs; j++) {
+		hm[j] = hmn[stage][j];
+		if(hmn[stage][j] == 1) {
+			hmax += 1;
+		}
+	}
+	for(int ball = 0; ball < bs; ball++) {
+		draw(b[ball].x, b1[stage][ball].y, 2);
+	}
+	draw(w[0].x, w[0].y, 1);
+	draw(h[0].x, h[0].y, 3);
+	for(int me = 0; me < 12; me++) {
+		ce(8 + (me / 2), 19);
+	}
+	hmax = 0;
+}
+
+void cS() {
+	for(int i = 0; i < ws; i++) {
+		w[i] = w1[stage][i];
+	}
+	for(int j = 0; j < bs; j++) {
+		b[j] = b1[stage][j];
+	}
+	for(int k = 0; k < hs; k++) {
+		h[k] = h1[stage][k];
+	}
+	P = p[stage];
+}
+
+void forn() {
+	ws = wInLev[stage];
+	bs = bInLev[stage];
+	hs = hInLev[stage];
+}
+
+void makeStage() {
+	forn();
+	cS();
+	int pc[2];
+	int bc[2];
+	int a;
+	int pe = 0;	
+	int pb = 0;
+	int add[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+	int i = 0;
+	int move = 0;
+	e();
+	
+	draw(P.x, P.y, 0);
+	draw(w[i].x, w[i].y, 1);
+	draw(h[i].x, h[i].y, 3);
+
+	for(int i = 0; i < bs; i++) {
+		bb[i] = b[i];
+	}
+	pbu = P;
+
+	for(int ball = 0; ball < bs; ball++) {
+		draw(b[ball].x, b[ball].y, 2);
+	}
+	
+	for(int me = 0; me < 12; me++) {
+		ce(8 + (me / 2), 19);
+	}
+	
+	printf("\n\n"); 
+	cxy(9 * 2, 19);
+	
+	printf("%d", move);
+	while(hmax != hs) {
+		a = getch();
+		
+		if (a == 224) {
+			a = getch();
+				
+			switch(a){
+				case 75: i = 0; break; 
+				case 77: i = 1; break;
+				case 72: i = 2; break;
+				case 80: i = 3; break;
+			}
+		}
+		
+		pe = isEmpty(P.x + add[i][0], P.y + add[i][1]);
+		
+		
+		if(a == 97) {
+			if(stage - 1 > -1) {
+				stage -= 2;
+				break;
+			}
+		}
+		
+		else if(a == 115) {
+			if(stage + 1 < 5) {
+				break;
+			}
+		}
+		
+		else if(a == 99) {
+			backup();
+			P = pbu;
+			draw(P.x, P.y, 0);
+			move = 0;
+		}
+		
+		else if (pe == 1) {
+			pc[0] = P.x;
+			pc[1] = P.y;
+			P.x += add[i][0];
+			P.y += add[i][1];
+			ce(pc[0], pc[1]);
+			draw(P.x, P.y, 0); 
+			move += 1;
+		}
+		
+		else if(pe == 2) {
+			pe = isEmpty(b[bn].x + add[i][0], b[bn].y + add[i][1]);
+			
+			if(pe == 1) {
+				ce(b[bn].x, b[bn].y);
+				b[bn].x += add[i][0];
+				b[bn].y += add[i][1];
+				draw(b[bn].x, b[bn].y, 2);
+				
+				ce(P.x, P.y);   
+				P.x += add[i][0];
+				P.y += add[i][1];
+				draw(P.x, P.y, 0); 
+				move += 1;
+			}
+			
+			else if(pe == 3) {
+				if(hm[hn] == 0) {
+					ce(b[bn].x, b[bn].y);
+					b[bn].x += add[i][0];
+					b[bn].y += add[i][1];
+					draw(b[bn].x, b[bn].y, 2);
+				
+					hm[hn] = 1;
+					draw(h[i].x, h[i].y, 3);
+					hmax += 1;
+					
+					ce(P.x, P.y);   
+					P.x += add[i][0];
+					P.y += add[i][1];
+					draw(P.x, P.y, 0); 
+					move += 1;
+				}
+			}
+		}
+		
+		else if(pe == 3) {
+			if(hm[hn] == 1) {
+				hm[hn] = 0;
+				hn2 = hn;
+				
+				pe = isEmpty(P.x + add[i][0] + add[i][0], P.y + add[i][1] + add[i][1]);
+				pb = numIsBall(P.x + add[i][0], P.y + add[i][1]);
+				
+				if(pe == 1) {
+					ce(b[bn].x, b[bn].y);
+					b[bn].x += add[i][0];
+					b[bn].y += add[i][1];
+					draw(b[bn].x, b[bn].y, 2);
+					
+					draw(h[i].x, h[i].y, 3);
+					
+					ce(P.x, P.y);   
+					P.x += add[i][0];
+					P.y += add[i][1];
+					draw(P.x, P.y, 0); 
+					move += 1;
+				}	
+				
+				else if(pe == 3 && hm[hn] == 0) {
+					ce(b[bn].x, b[bn].y);
+					b[bn].x += add[i][0];
+					b[bn].y += add[i][1];
+					draw(b[bn].x, b[bn].y, 2);
+					
+					hm[hn] = 1;
+					draw(h[i].x, h[i].y, 3);
+					
+					ce(P.x, P.y);   
+					P.x += add[i][0];
+					P.y += add[i][1];
+					draw(P.x, P.y, 0); 
+					move += 1;
+				}
+				
+				else {
+					hm[hn2] = 1;
+				}
+			}
+			
+			else {
+				ce(P.x, P.y);   
+				P.x += add[i][0];
+				P.y += add[i][1];
+				draw(P.x, P.y, 0); 
+				move += 1;
+			}
+		}
+		draw(h[i].x, h[i].y, 3);
+		draw(P.x, P.y, 0);
+		cxy(9 * 2, 19);
+		printf("%d", move);
+	}
+	hmax = 0; 
+	if(a != 97 && a != 115) {
+		clear[stage] = 1;
+		for(int cc = 0; cc < 5; cc++) {
+			if(clear[cc] == 1) {
+				clearcheck += 1;
+			}
+			else clearcheck = 0;
+		}
+	}
+	stage += 1;
+}
+
+int main() {
+	cxy(2 * 2, 17);
+	printf("[STAGE]");
+	cxy(8 * 2, 17);
+	printf("[MOVE]");
+	
+	
+	while(clearcheck != 5) {
+		cxy(7, 19);
+		printf("%d", stage + 1);
+		
+		makeStage();
+	}
+	
+	for(int r = 0; r < 30; r++) {
+		for(int r2 = 0; r2 < 20; r2++) {
+			ce(r, r2);
+		}
+	}
+	
+	cxy(7,5);
+	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), 15);
+	printf("[Game Clear!]\n\n\n\n\n");
+	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), 7);
+	 
+	return 0;
+}
