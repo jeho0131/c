@@ -3,19 +3,22 @@
 #include <conio.h>
 
 
-typedef struct {int x;	int y;} point;
+typedef struct {int x;	int y;} point; // 좌표 구조체 만들기
 
-int stagemax = 15;
+int stagemax = 15; //스테이지 최대치
 
-int wInLev[15] ={ 28, 39, 35, 26, 37, 32, 26, 26, 29, 29, 26, 29, 36, 28 };
+//벽, 공, 집 생성수
+int wInLev[15] ={ 28, 39, 35, 26, 37, 32, 26, 26, 29, 29, 26, 29, 36, 28 }; 
 int bInLev[15] = { 4, 3, 4, 5, 5, 5, 5, 4, 4, 6, 6, 4, 7, 8 };
 int hInLev[15] = { 4, 3, 4, 5, 5, 5, 5, 4, 4, 6, 6, 4, 7, 8 };
 
-point w[100];
+//현재 스테이지 좌표들 저장공간
+point w[100]; 
 point b[100];
 point h[100];
 point P;
 
+//모든 스테이지의 벽 
 point w1[15][100] = {
 
 					        { {4,2}, {5,2}, {6,2}, {4,3}, {6,3}, {4,4}, {6,4}, 
@@ -95,7 +98,7 @@ point w1[15][100] = {
 							  {3,9}, {4,9}, {5,9}, {6,9}, {7,9}, {8,9}, {9,9}	}
 	
 																		             		};
-
+//모든 스테이지의 공 좌표
 point b1[15][100] = {
 
 							  {{5,5}, {7,5}, {5,6}, {6,7}},
@@ -115,6 +118,7 @@ point b1[15][100] = {
 		
 													  									};
 
+//모든 스테이지의 집 좌표
 point h1[15][100] = {
 
 							  {{5,3}, {8,5}, {3,6}, {6,8}},
@@ -134,6 +138,7 @@ point h1[15][100] = {
 		
 																						};
 
+//모든 스테이지의 집 기본 모드
 int hmn[15][100] =  {
 							{ 0, 0, 0, 0 },
 							{ 0, 0, 0 },
@@ -151,6 +156,7 @@ int hmn[15][100] =  {
 							{ 0, 0, 0, 0, 0, 0, 0, 0 }
 														};
 
+//모든 스테이지의 플레이어 시작 좌표
 point p[15] = {
 					   	{6,6}, {3,3}, {3,6}, {3,4}, {10,3}, 
 					    {8,7}, {3,6}, {7,3}, {6,9}, {3,6},
@@ -178,6 +184,7 @@ int back = 0;
 
 
 
+//좌표 바꾸기
 void cxy(int x, int y) {
 	COORD Pos = {x, y};
 	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Pos);
@@ -185,6 +192,7 @@ void cxy(int x, int y) {
 
 
 
+//플레이어 이동할 곳 확인
 int isEmpty(int x, int y) {
 	for(int i = 0; i < ws; i++) {
 		if(w[i].x == x && w[i].y == y) {
@@ -207,6 +215,7 @@ int isEmpty(int x, int y) {
 	return 1;
 }
 
+
 int numIsBall(int x, int y) {
 	for(int i = 0; i < bs; i++) {
 		if(b[i].x == x && b[i].y == y) {
@@ -217,12 +226,13 @@ int numIsBall(int x, int y) {
 }
 
 
-
+//지정된 좌표 지우기
 void ce(int x, int y) { 
 	cxy(x * 2, y); 
 	printf("  ");  
 }
 
+//전체 지우기
 void e() {
 	for(int r = 0; r < 20; r++) {
 		for(int r2 = 0; r2 < 30; r2++) {
@@ -237,6 +247,7 @@ void e() {
 	}
 }
 
+//그리기
 void draw(int x, int y, int c) {
 	cxy(x * 2, y);
 
@@ -261,6 +272,7 @@ void draw(int x, int y, int c) {
 	}
 }
 
+//초기화
 void backup() {
 	cxy(0,0);
 	for(int r = 0; r < 16; r++) {
@@ -288,6 +300,7 @@ void backup() {
 	hmax = 0;
 }
 
+//이동하기 전 저장
 void past() {
 	for(int i = 3; i > 0; --i) {
 		pp[i].x = pp[i-1].x;
@@ -309,6 +322,7 @@ void past() {
 	back += 1;
 }
 
+//이동하기 전으로 돌아가기
 void pastChange() {
 	for(int i = 0; i < 4; i++) {
 		pp[i].x = pp[i+1].x;
@@ -322,6 +336,7 @@ void pastChange() {
 	}
 }
 
+//현재 스테이지 좌표 바꾸기
 void cS() {
 	for(int i = 0; i < ws; i++) {
 		w[i] = w1[stage][i];
@@ -335,6 +350,7 @@ void cS() {
 	P = p[stage];
 }
 
+//벽, 공, 집이 얼마나 있는지 저장
 void forn() {
 	ws = wInLev[stage];
 	bs = bInLev[stage];
@@ -349,14 +365,15 @@ void makeStage() {
 	int a;
 	int pe = 0;	
 	int pb = 0;
-	int add[4][2] = {{-1,0},{1,0},{0,-1},{0,1}};
+	int add[4][2] = {{-1,0},{1,0},{0,-1},{0,1}}; //각각 왼쪽, 오른쪽, 위, 아래로 이동 할 수 있는 좌표 저장
 	int i = 0;
 	int move = 0;
 	back = 1;
 	int hmc = 0;
 	int hmaxcheck = 0;
 	e();
-
+	
+	//현재 스테이지 만들기
 	for(int i = 0; i < bs; i++) {
 		bb[i] = b[i];
 	}
@@ -369,7 +386,8 @@ void makeStage() {
 	draw(P.x, P.y, 0);
 	draw(w[i].x, w[i].y, 1);
 	draw(h[i].x, h[i].y, 3);
-
+	
+	//현재 스테이지랑 이동 횟수 나타내기
 	cxy(2 * 2, 17);
 	printf("[STAGE]");
 
@@ -381,12 +399,15 @@ void makeStage() {
 
 	cxy(9 * 2, 19);
 	printf("%d", move);
-
+	
 	past();
 
+	//플레이어 이동
 	while(hmax != hs) {
+		//현재 입력 되는 값 저장
 		a = getch();
-
+		
+		//화살표 값에 따라 방향(i)을 다르게 나타내기
 		if (a == 224) {
 			a = getch();
 
@@ -397,17 +418,20 @@ void makeStage() {
 				case 80: i = 3; break;
 			}
 		}
-
+		
+		//플레이어 이동할 좌표에 무엇이 있는지 확인
 		pe = isEmpty(P.x + add[i][0], P.y + add[i][1]);
 
-
+		
+		//a를 누르면 이전 스테이지로 이동
 		if(a == 97) {
 			if(stage - 1 > -1) {
 				stage -= 2;
 				break;
 			}
 		}
-
+		
+		//z를 누르면 이동하기 전으로 이동
 		else if(a == 122) {
 			if(move != 0 && back > 0) {
 				pastChange();
@@ -446,21 +470,25 @@ void makeStage() {
 				back -= 1;
 			}
 		}
-
+		
+		//s를 누르면 다음 스테이지로 이동
 		else if(a == 115) {
 			if(stage + 1 < stagemax) {
 				break;
 			}
 		}
-
+		
+		//c를 누르면 현재 스테이지 초기화
 		else if(a == 99) {
 			backup();
 			P = pbu;
 			draw(P.x, P.y, 0);
 			move = 0;
 		}
-
+		
+		//플레이어가 이동할 좌표에 아무것도 없을경우
 		else if (pe == 1) {
+			//그 좌표로 이동한다
 			pc[0] = P.x;
 			pc[1] = P.y;
 			P.x += add[i][0];
@@ -470,24 +498,30 @@ void makeStage() {
 			move += 1;
 			past();
 		}
-
+		
+		//플레이어가 이동할 좌표에 집이 있을경우
 		else if(pe == 3) {
+			//집이 채워져 있을 경우
 			if(hm[hn] == 1) {
 				hm[hn] = 0;
 				hn2 = hn;
 
 				pe = isEmpty(P.x + add[i][0] + add[i][0], P.y + add[i][1] + add[i][1]);
 				pb = numIsBall(P.x + add[i][0], P.y + add[i][1]);
-
+				
+				//집의 방향 중 플레이어가 이동할 방향에 아무것도 없을경우
 				if(pe == 1) {
+					//공을 플레이어가 이동할 방향으로 이동
 					ce(b[bn].x, b[bn].y);
 					b[bn].x += add[i][0];
 					b[bn].y += add[i][1];
 					draw(b[bn].x, b[bn].y, 2);
-
+					
+					//집이 채워지지 않은 것으로 바꿈
 					draw(h[i].x, h[i].y, 3);
 					hmax -= 1;
-
+					
+					//플레이어를 이동
 					ce(P.x, P.y);   
 					P.x += add[i][0];
 					P.y += add[i][1];
@@ -495,16 +529,20 @@ void makeStage() {
 					move += 1;
 					past();
 				}	
-
+				
+				//집의 방향 중 플레이어가 이동할 방향에 집이 있는 경우
 				else if(pe == 3 && hm[hn] == 0) {
+					//공을 플레이어가 이동할 방향으로 이동
 					ce(b[bn].x, b[bn].y);
 					b[bn].x += add[i][0];
 					b[bn].y += add[i][1];
 					draw(b[bn].x, b[bn].y, 2);
-
+					
+					//앞에 있는 집을 채워 놓음
 					hm[hn] = 1;
 					draw(h[i].x, h[i].y, 3);
-
+					
+					//플레이어 이동
 					ce(P.x, P.y);   
 					P.x += add[i][0];
 					P.y += add[i][1];
@@ -512,14 +550,17 @@ void makeStage() {
 					move += 1;
 					past();
 				}
-
+				
+				//막혀있거나 공이있는 경우 그대로
 				else {
 					hm[hn2] = 1;
 					past();
 				}
 			}
-
+			
+			//채워지지 않은 경우
 			else {
+				//플레이어 이동
 				ce(P.x, P.y);   
 				P.x += add[i][0];
 				P.y += add[i][1];
@@ -528,16 +569,20 @@ void makeStage() {
 				past();
 			}
 		}
-
+		
+		//플레이어가 이동할 방향에 공이 있는 경우
 		else if(pe == 2) {
 			pe = isEmpty(b[bn].x + add[i][0], b[bn].y + add[i][1]);
-
+			
+			//공의 방향 중 플레이어가 이동할 방향에 아무것도 없을 경우
 			if(pe == 1) {
+				//플레이어가 이동할 방향으로 이동
 				ce(b[bn].x, b[bn].y);
 				b[bn].x += add[i][0];
 				b[bn].y += add[i][1];
 				draw(b[bn].x, b[bn].y, 2);
-
+				
+				//플레이어 이동
 				ce(P.x, P.y);   
 				P.x += add[i][0];
 				P.y += add[i][1];
@@ -545,18 +590,23 @@ void makeStage() {
 				move += 1;
 				past();
 			}
-
+			
+			//공의 방향 중 플레이어가 이동할 방향에 집이 있는경우
 			else if(pe == 3) {
+				//채워지지 않은 경우
 				if(hm[hn] == 0) {
+					//공을 플레이어가 이동할 방향으로 이동
 					ce(b[bn].x, b[bn].y);
 					b[bn].x += add[i][0];
 					b[bn].y += add[i][1];
 					draw(b[bn].x, b[bn].y, 2);
-
+					
+					//집을 채워넣음
 					hm[hn] = 1;
 					draw(h[i].x, h[i].y, 3);
 					hmax += 1;
-
+					
+					//플레이어 이동
 					ce(P.x, P.y);   
 					P.x += add[i][0];
 					P.y += add[i][1];
@@ -567,16 +617,21 @@ void makeStage() {
 			}
 		}
 
-		draw(h[i].x, h[i].y, 3);
-		draw(P.x, P.y, 0);
-		cxy(9 * 2, 19);
+		draw(h[i].x, h[i].y, 3); // 집 다시 생성
+		draw(P.x, P.y, 0); //플레이어 다시 생성
+		
+	 	//이동 횟수 적기
+		cxy(9 * 2, 19); 
 		printf("%d", move);
+		
+		//되돌린 횟수가 3을 넘으면 3으로 고정
 		if(back > 3) {
 			back = 3;
 		}
 		pe = 0;
 	}
 	hmax = 0; 
+	//스테이지들을 전부 클리어 했는지 확인
 	if(a != 97 && a != 115) {
 		clear[stage] = 1;
 		for(int cc = 0; cc < stagemax; cc++) {
@@ -589,10 +644,12 @@ void makeStage() {
 			}
 		}
 	}
+	//다음 스테이지 이동
 	stage += 1;
 }
 
 int main() {
+	//기능 설명 띄우기
 	cxy(20 * 2, 2); 
 	printf("←↑→↓ : 움직이기");
 	cxy(20 * 2, 4);
@@ -603,17 +660,20 @@ int main() {
 	printf("s : 다음 스테이지로 이동");
 	cxy(20 * 2, 10);
 	printf("z : 행동 되돌리기");
-		
+	
+	//스테이지를 전부 클리어 할 때 까지 스테이지 생성
 	while(clearcheck != stagemax) {
 		makeStage();
 	}
-
+	
+	//전체 삭제
 	for(int r = 0; r < 30; r++) {
 		for(int r2 = 0; r2 < 20; r2++) {
 			ce(r, r2);
 		}
 	}
-
+	
+	//Game Clear 메세지 띄우기
 	cxy(7,5);
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE), 15);
 	printf("[Game Clear!]\n\n\n\n\n");
